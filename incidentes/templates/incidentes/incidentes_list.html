@@ -1,0 +1,84 @@
+{% extends 'incidentes/base_incidentes.html' %}
+{% block title %}Incidentes{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-header bg-white">
+    <h5 class="mb-0">Incidentes</h5>
+  </div>
+  <div class="card-body">
+    {% include 'incidentes/_filtros.html' %}
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+      <tr>
+        <th>#</th>
+        <th>Título</th>
+        <th>Categoria</th>
+        <th>Prioridade</th>
+        <th>Status</th>
+        <th>Responsável</th>
+        <th>Criado</th>
+        <th class="text-center" style="width:160px;">Ações</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for incidente in page_obj.object_list %}
+        <tr>
+          <td>{{ incidente.id }}</td>
+          <td><a href="{% url 'incident_detail' incidente.id %}" class="link-primary text-decoration-none">{{ incidente.title }}</a></td>
+          <td>{{ incidente.get_category_display|default:incidente.category }}</td>
+          <td><span class="badge text-bg-{% if incidente.priority == 'ALTA' %}danger{% elif incidente.priority == 'MEDIA' %}warning{% else %}secondary{% endif %}">
+            {{ incidente.get_priority_display|default:incidente.priority }}
+          </span></td>
+          <td>
+            <span class="badge text-bg-{% if incidente.status == 'ABERTO' %}primary{% elif incidente.status == 'EM_ANDAMENTO' %}warning{% elif incidente.status == 'RESOLVIDO' %}success{% else %}secondary{% endif %}">
+              {{ incidente.get_status_display|default:incidente.status }}
+            </span>
+          </td>
+          <td>{{ incidente.assignee }}</td>
+          <td>{{ incidente.created_at|date:"d/m/Y H:i" }}</td>
+          <td class="text-center">
+            <a href="{% url 'incident_update' incidente.id %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+            <a href="{% url 'incident_delete' incidente.id %}" class="btn btn-sm btn-outline-danger">Excluir</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="8" class="text-center text-muted py-4">Nenhum incidente encontrado.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card-footer d-flex justify-content-between align-items-center">
+    <div class="small text-muted">
+      Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }} — Total: {{ page_obj.paginator.count }}
+    </div>
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-success btn-sm"
+         href="{% url 'incident_export' %}?{{ request.GET.urlencode }}">Exportar</a>
+      <nav aria-label="Paginação">
+        <ul class="pagination pagination-sm mb-0">
+          {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page=1&{{ request.GET.urlencode }}">«</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}">‹</a></li>
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">«</span></li>
+            <li class="page-item disabled"><span class="page-link">‹</span></li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}">›</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&{{ request.GET.urlencode }}">»</a></li>
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">›</span></li>
+            <li class="page-item disabled"><span class="page-link">»</span></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+{% endblock %}

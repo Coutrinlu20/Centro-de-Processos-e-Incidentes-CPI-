@@ -1,0 +1,18 @@
+{% extends 'incidentes/base_incidentes.html' %}
+{% block title %}Excluir Incidente{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-header bg-danger text-white">
+    <h5 class="mb-0">Excluir Incidente</h5>
+  </div>
+  <div class="card-body">
+    <p>Tem certeza de que deseja excluir o incidente <strong>#{{ incidente.id }} – {{ incidente.title }}</strong>?</p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Sim, excluir</button>
+      <a href="{% url 'incident_detail' incidente.id %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

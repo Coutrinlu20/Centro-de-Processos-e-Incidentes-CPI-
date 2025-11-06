@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head><meta charset="utf-8"><title>Notificação de Incidente</title></head>
+<body style="font-family: Arial, sans-serif; color:#222;">
+  <h2 style="margin-bottom:0;">Incidente {{ action|default:"Atualizado" }}: #{{ incidente.id }}</h2>
+  <p style="margin-top:6px;"><strong>Título:</strong> {{ incidente.title }}</p>
+  <p><strong>Status:</strong> {{ incidente.get_status_display|default:incidente.status }}</p>
+  <p><strong>Prioridade:</strong> {{ incidente.get_priority_display|default:incidente.priority }}</p>
+  <p><strong>Categoria:</strong> {{ incidente.get_category_display|default:incidente.category }}</p>
+  <p><strong>Responsável:</strong> {{ incidente.assignee }}</p>
+  <p><strong>Descrição:</strong></p>
+  <p style="white-space: pre-wrap;">{{ incidente.description }}</p>
+  <hr>
+  <p style="font-size:13px;color:#666;">Enviado automaticamente pelo sistema de Gestão de Incidentes.</p>
+</body>
+</html>

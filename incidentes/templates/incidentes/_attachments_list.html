@@ -1,0 +1,13 @@
+<ul class="list-group mb-2">
+  {% for at in incidente.attachment_set.all %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <div class="text-truncate" style="max-width: 70%;">
+        <a href="{{ at.file.url }}" target="_blank" class="text-decoration-none">{{ at.file.name|slice:"-60:" }}</a>
+        <div class="small text-muted">por {{ at.uploaded_by }} em {{ at.uploaded_at|date:"d/m/Y H:i" }}</div>
+      </div>
+      <span class="badge text-bg-light">{{ at.file.size|filesizeformat }}</span>
+    </li>
+  {% empty %}
+    <li class="list-group-item text-muted">Nenhum anexo.</li>
+  {% endfor %}
+</ul>

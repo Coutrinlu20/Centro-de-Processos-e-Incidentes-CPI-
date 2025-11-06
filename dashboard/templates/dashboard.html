@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{% static 'dashboard.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Dashboard</h1>
+        <p class="subtitle">Visão geral dos incidentes e manuais do sistema</p>
+
+        <div class="stats-grid">
+            {% for stat in stats %}
+                <div class="stat-card {{ stat.variant }}">
+                    <h3>{{ stat.title }}</h3>
+                    <p class="value">{{ stat.value }}</p>
+                    <span class="trend">{{ stat.trend }}</span>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="main-grid">
+            <div class="incidents-card">
+                <div class="header">
+                    <h2>Incidentes Recentes</h2>
+                    <button class="btn-outline">Ver todos</button>
+                </div>
+                {% for i in incidents %}
+                    <div class="incident">
+                        <div class="incident-header">
+                            <strong>{{ i.title }}</strong>
+                            <span class="status">{{ i.status }}</span>
+                        </div>
+                        <p>{{ i.description }}</p>
+                        <small>Categoria: {{ i.category }} • Responsável: {{ i.assignee }} • {{ i.created_at }}</small>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="categories-card">
+                <h2>Categorias Mais Recorrentes</h2>
+                {% for c in categories %}
+                    <div class="category">
+                        <div class="row">
+                            <span class="name">{{ c.category }}</span>
+                            <span class="count">{{ c.count }} incidentes</span>
+                        </div>
+                        <div class="bar-bg">
+                            <div class="bar-fill" style="width:{{ c.count|floatformat:0|divisibleby:45|yesno:'100,calc(c.count/45*100)' }}%; background:{{ c.color }}"></div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
