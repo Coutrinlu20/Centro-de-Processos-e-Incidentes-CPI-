@@ -1,167 +1,62 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Painel - Centro de Processos e Incidentes</title>
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
 
-  <!-- Bootstrap e Ícones -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<h3 class="fw-bold mb-3">Dashboard</h3>
+<p class="text-muted mb-4">Visão geral dos incidentes e manuais do sistema</p>
 
-  <style>
-    body {
-      display: flex;
-      min-height: 100vh;
-      overflow: hidden;
-    }
-
-    /* Sidebar */
-    .sidebar {
-      width: 250px;
-      background-color: #0d6efd;
-      color: #fff;
-      flex-shrink: 0;
-      transition: all 0.3s;
-    }
-    .sidebar h4 {
-      text-align: center;
-      color: #fff;
-      margin-top: 1rem;
-      font-weight: 600;
-    }
-    .sidebar .nav-link {
-      color: #ffffffb3;
-      font-weight: 500;
-      border-radius: 6px;
-    }
-    .sidebar .nav-link:hover,
-    .sidebar .nav-link.active {
-      background-color: rgba(255, 255, 255, 0.2);
-      color: #fff;
-    }
-
-    /* Conteúdo */
-    .content {
-      flex-grow: 1;
-      background-color: #f8f9fa;
-      overflow-y: auto;
-      padding: 1.5rem;
-    }
-
-    /* Navbar superior dentro do conteúdo */
-    .topbar {
-      background-color: #fff;
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid #dee2e6;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    /* Ícone de colapso */
-    .toggle-btn {
-      background: none;
-      border: none;
-      color: #0d6efd;
-      font-size: 1.4rem;
-    }
-
-    /* Sidebar colapsada */
-    .sidebar.collapsed {
-      width: 70px;
-    }
-    .sidebar.collapsed .nav-link span {
-      display: none;
-    }
-    .sidebar.collapsed h4 {
-      display: none;
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Sidebar -->
-  <div class="sidebar p-3" id="sidebar">
-    <h4>CPI</h4>
-    <ul class="nav nav-pills flex-column mb-auto mt-4">
-      <li><a href="{% url 'index' %}" class="nav-link active"><i class="bi bi-house-door me-2"></i><span>Início</span></a></li>
-      <li><a href="/usuarios/" class="nav-link"><i class="bi bi-people me-2"></i><span>Usuários</span></a></li>
-      <li><a href="/incidentes/" class="nav-link"><i class="bi bi-exclamation-triangle me-2"></i><span>Incidentes</span></a></li>
-      <li><a href="#" class="nav-link"><i class="bi bi-bar-chart-line me-2"></i><span>Relatórios</span></a></li>
-      <li><a href="#" class="nav-link"><i class="bi bi-gear me-2"></i><span>Configurações</span></a></li>
-    </ul>
-    <hr>
-    <div class="dropdown">
-      <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
-        <i class="bi bi-person-circle me-2"></i>
-        <span>{{ request.user.username }}</span>
-      </a>
-      <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-        <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Sair</a></li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- Conteúdo -->
-  <div class="content">
-    <!-- Barra superior -->
-    <div class="topbar">
-      <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
-      <h5 class="m-0 text-primary fw-semibold">Painel Principal</h5>
+<div class="row g-3">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-0">Incidentes Abertos</h6>
+                    <h3 class="fw-bold">24</h3>
+                </div>
+                <i class="bi bi-exclamation-triangle text-warning fs-2"></i>
+            </div>
+            <small class="text-danger">+3 esta semana</small>
+        </div>
     </div>
 
-    <!-- Conteúdo principal -->
-    <div class="container-fluid mt-4">
-      <div class="row mb-3">
-        <div class="col">
-          <h4 class="fw-semibold text-primary">Bem-vindo(a), {{ request.user.first_name|default:request.user.username }}!</h4>
-          <p class="text-muted">Selecione um módulo no menu lateral.</p>
-        </div>
-      </div>
-
-      <div class="row g-3">
-        <div class="col-md-4">
-          <div class="card shadow-sm border-0">
-            <div class="card-body text-center">
-              <i class="bi bi-people fs-1 text-primary"></i>
-              <h5 class="mt-2">Usuários</h5>
-              <a href="/usuarios/" class="btn btn-outline-primary btn-sm mt-2">Acessar</a>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-0">Resolvidos Hoje</h6>
+                    <h3 class="fw-bold">12</h3>
+                </div>
+                <i class="bi bi-check-circle text-success fs-2"></i>
             </div>
-          </div>
+            <small class="text-success">+25% vs ontem</small>
         </div>
-        <div class="col-md-4">
-          <div class="card shadow-sm border-0">
-            <div class="card-body text-center">
-              <i class="bi bi-exclamation-triangle fs-1 text-warning"></i>
-              <h5 class="mt-2">Incidentes</h5>
-              <a href="/incidentes/" class="btn btn-outline-warning btn-sm mt-2">Acessar</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card shadow-sm border-0">
-            <div class="card-body text-center">
-              <i class="bi bi-file-earmark-text fs-1 text-success"></i>
-              <h5 class="mt-2">Relatórios</h5>
-              <a href="#" class="btn btn-outline-success btn-sm mt-2">Acessar</a>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    const sidebar = document.getElementById('sidebar');
-    const toggleBtn = document.getElementById('toggleSidebar');
-    toggleBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('collapsed');
-    });
-  </script>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-0">Tempo Médio</h6>
+                    <h3 class="fw-bold">4.2h</h3>
+                </div>
+                <i class="bi bi-clock text-primary fs-2"></i>
+            </div>
+            <small class="text-muted">-0.8h vs semana passada</small>
+        </div>
+    </div>
 
-</body>
-</html>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-0">Manuais Publicados</h6>
+                    <h3 class="fw-bold">156</h3>
+                </div>
+                <i class="bi bi-journal-text text-info fs-2"></i>
+            </div>
+            <small class="text-info">+8 este mês</small>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Alterar Permissões{% endblock %}
+{% block header %}Alterar Permissões{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white border-0 pt-4">
+        <h5 class="mb-1 fw-semibold">
+          <i class="bi bi-shield-lock me-2"></i> Permissões de Acesso
+        </h5>
+        <div class="text-muted small">Usuário: <strong>{{ alvo.name }}</strong> · {{ alvo.email }}</div>
+      </div>
+
+      <form method="post" class="card-body pt-0">
+        {% csrf_token %}
+
+        <!-- Incidentes -->
+        <div class="p-3 rounded border mb-3">
+          <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <h6 class="mb-0">Incidentes</h6>
+            <div class="ms-auto form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="incidentesToggle">
+              <label class="form-check-label small text-muted" for="incidentesToggle">Marcar todos</label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 form-check mb-2">
+              {{ form.can_view_incidents }} <label class="form-check-label ms-1">Ver Incidentes</label>
+            </div>
+            <div class="col-md-6 form-check mb-2">
+              {{ form.can_edit_incidents }} <label class="form-check-label ms-1">Criar/Editar Incidentes</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manuais -->
+        <div class="p-3 rounded border mb-3">
+          <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-journal-text me-2"></i>
+            <h6 class="mb-0">Manuais & Documentos</h6>
+            <div class="ms-auto form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="manuaisToggle">
+              <label class="form-check-label small text-muted" for="manuaisToggle">Marcar todos</label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 form-check mb-2">
+              {{ form.can_view_manuals }} <label class="form-check-label ms-1">Ver Manuais</label>
+            </div>
+            <div class="col-md-6 form-check mb-2">
+              {{ form.can_edit_manuals }} <label class="form-check-label ms-1">Criar/Editar Manuais</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Administração -->
+        <div class="p-3 rounded border mb-4">
+          <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-gear me-2"></i>
+            <h6 class="mb-0">Administração</h6>
+          </div>
+          <div class="row">
+            <div class="col-md-6 form-check mb-2">
+              {{ form.can_manage_users }} <label class="form-check-label ms-1">Gerenciar Usuários</label>
+            </div>
+            <div class="col-md-6 form-check mb-2">
+              {{ form.can_view_reports }} <label class="form-check-label ms-1">Ver Relatórios/Dashboards</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <a href="{% url 'listar_usuarios' %}" class="btn btn-light border">Cancelar</a>
+          <button class="btn btn-primary">
+            <i class="bi bi-check2-circle me-1"></i> Salvar Permissões
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // toggles de "marcar todos" por seção
+  (function() {
+    const byName = n => document.getElementsByName(n)[0];
+    const toggles = [
+      { id: "incidentesToggle", fields: ["can_view_incidents", "can_edit_incidents"] },
+      { id: "manuaisToggle",    fields: ["can_view_manuals", "can_edit_manuals"] },
+    ];
+    toggles.forEach(cfg => {
+      const t = document.getElementById(cfg.id);
+      if (!t) return;
+      t.addEventListener("change", () => {
+        cfg.fields.forEach(f => {
+          const el = byName(f);
+          if (el) el.checked = t.checked;
+        });
+      });
+    });
+  })();
+</script>
+{% endblock %}
