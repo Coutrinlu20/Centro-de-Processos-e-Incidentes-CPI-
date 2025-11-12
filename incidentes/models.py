@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import User
 
 class Incidente(models.Model):
     PRIORIDADES = [
@@ -24,6 +25,9 @@ class Incidente(models.Model):
     assignee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
+
+    usuarios_que_leram = models.ManyToManyField(User, related_name='incidentes_lidos', blank=True)
+    usuarios_que_editaram = models.ManyToManyField(User, related_name='incidentes_editados', blank=True)
 
     class Meta:
         ordering = ['-criado_em']
