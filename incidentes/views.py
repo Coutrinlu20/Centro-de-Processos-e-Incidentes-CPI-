@@ -16,7 +16,7 @@ def criar_incidente(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Incidente criado com sucesso!")
-            return redirect('incidentes_list')
+            return redirect('incidentes_listar')
     else:
         form = IncidenteForm()
     return render(request, 'incidentes/incidente_form.html', {'form': form, 'acao': 'Novo'})
@@ -29,7 +29,7 @@ def editar_incidente(request, id):
         if form.is_valid():
             form.save()
             messages.success(request, "Incidente atualizado com sucesso!")
-            return redirect('incidentes_list')
+            return redirect('incidentes_listar')
     else:
         form = IncidenteForm(instance=incidente)
     return render(request, 'incidentes/incidente_form.html', {'form': form, 'acao': 'Editar'})
@@ -39,7 +39,7 @@ def excluir_incidente(request, id):
     incidente = get_object_or_404(Incidente, id=id)
     incidente.delete()
     messages.success(request, "Incidente excluído com sucesso!")
-    return redirect('incidentes_list')
+    return redirect('incidentes_listar')
 
 # Visualizar incidente
 @login_required
@@ -56,7 +56,7 @@ def editar_incidente(request, id):
         if form.is_valid():
             form.save()
             incidente.usuarios_que_editaram.add(request.user)
-            return redirect('incidentes_list')
+            return redirect('incidentes_listar')
     else:
         form = IncidenteForm(instance=incidente)
     return render(request, 'incidentes/incidente_form.html', {'form': form, 'incidente': incidente})
