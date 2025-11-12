@@ -1,59 +1,87 @@
 {% extends 'base.html' %}
-{% block title %}Adicionar Novo Usuário{% endblock %}
+{% load static %}
+
 {% block content %}
-
 <div class="container py-4">
+    <div class="card border-0 shadow-sm rounded-4 mx-auto" style="max-width: 520px;">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-1">
+                <i class="bi bi-person-plus"></i> Adicionar Novo Usuário
+            </h5>
+            <p class="text-muted mb-4">Preencha os dados do novo usuário do sistema</p>
 
-    <!-- Botão para abrir o modal -->
-    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#usuarioModal">
-        <i class="bi bi-person-plus"></i> Adicionar Novo Usuário
-    </button>
+            <form method="POST">
+                {% csrf_token %}
 
-    <!-- Modal de Adicionar Usuário -->
-    <div class="modal fade" id="usuarioModal" tabindex="-1" aria-labelledby="usuarioModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-3">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title fw-semibold" id="usuarioModalLabel">
-                        <i class="bi bi-person-plus me-2 text-primary"></i> Adicionar Novo Usuário
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Nome de Usuário *</label>
+                    <input type="text" name="username" class="form-control" placeholder="Digite o nome de usuário" required>
                 </div>
 
-                <div class="modal-body">
-                    <p class="text-muted mb-4">Preencha os dados do novo usuário do sistema</p>
-
-                    <form method="post">
-                        {% csrf_token %}
-
-                        <div class="mb-3">
-                            <label for="nome" class="form-label fw-semibold">Nome Completo</label>
-                            <input type="text" name="nome" id="nome" class="form-control" placeholder="Digite o nome completo" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="email" class="form-label fw-semibold">E-mail</label>
-                            <input type="email" name="email" id="email" class="form-control" placeholder="usuario@empresa.com" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="perfil" class="form-label fw-semibold">Perfil de Acesso</label>
-                            <select name="perfil" id="perfil" class="form-select" required>
-                                <option value="Colaborador" selected>Colaborador</option>
-                                <option value="Administrador">Administrador</option>
-                                <option value="Visualizador">Visualizador</option>
-                            </select>
-                        </div>
-
-                        <div class="text-end mt-4">
-                            <button type="button" class="btn btn-light border me-2" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Adicionar Usuário</button>
-                        </div>
-                    </form>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">E-mail</label>
+                    <input type="email" name="email" class="form-control" placeholder="usuario@empresa.com" required>
                 </div>
-            </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Perfil de Acesso *</label>
+                    <select name="perfil" class="form-select" required>
+                        <option value="Colaborador">Colaborador</option>
+                        <option value="Administrador">Administrador</option>
+                        <option value="Visualizador">Visualizador</option>
+                    </select>
+                </div>
+
+                <!-- Campo de Senha com botão de mostrar/ocultar -->
+                <div class="mb-3 position-relative">
+                    <label class="form-label fw-semibold">Senha *</label>
+                    <div class="input-group">
+                        <input type="password" id="password1" name="password1" class="form-control" placeholder="Digite uma senha segura" required>
+                        <button type="button" class="btn btn-outline-secondary" id="togglePassword1">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Campo de Confirmação de Senha -->
+                <div class="mb-3 position-relative">
+                    <label class="form-label fw-semibold">Confirme a Senha *</label>
+                    <div class="input-group">
+                        <input type="password" id="password2" name="password2" class="form-control" placeholder="Confirme a senha" required>
+                        <button type="button" class="btn btn-outline-secondary" id="togglePassword2">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4">
+                    <a href="{% url 'usuarios_listar' %}" class="btn btn-light me-2">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Adicionar Usuário</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
+<!-- Script para mostrar/ocultar senha -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const togglePassword1 = document.getElementById('togglePassword1');
+    const password1 = document.getElementById('password1');
+    const togglePassword2 = document.getElementById('togglePassword2');
+    const password2 = document.getElementById('password2');
+
+    togglePassword1.addEventListener('click', () => {
+        const type = password1.getAttribute('type') === 'password' ? 'text' : 'password';
+        password1.setAttribute('type', type);
+        togglePassword1.innerHTML = type === 'password' ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
+    });
+
+    togglePassword2.addEventListener('click', () => {
+        const type = password2.getAttribute('type') === 'password' ? 'text' : 'password';
+        password2.setAttribute('type', type);
+        togglePassword2.innerHTML = type === 'password' ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
+    });
+});
+</script>
 {% endblock %}

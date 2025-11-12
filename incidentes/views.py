@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Incidente
 from .forms import IncidenteForm
+from django.contrib import messages
 
 # Listar incidentes
 def listar_incidentes(request):
@@ -59,3 +60,8 @@ def editar_incidente(request, id):
     else:
         form = IncidenteForm(instance=incidente)
     return render(request, 'incidentes/incidente_form.html', {'form': form, 'incidente': incidente})
+
+
+def detalhar_incidente(request, id):
+    incidente = get_object_or_404(Incidente, id=id)
+    return render(request, 'incidentes/incidente_detail.html', {'incidente': incidente})

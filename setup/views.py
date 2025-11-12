@@ -1,17 +1,23 @@
 from django.shortcuts import render
 from incidentes.models import Incidente
 from django.db.models import Count
+from documentos.models import Documento
 
 
 def index(request):
-    # Busca os 5 incidentes mais recentes — campo correto é 'criado_em'
     incidentes = Incidente.objects.order_by('-criado_em')[:5]
+    documentos = Documento.objects.order_by('-criado_em')[:5]
 
-    # Conta quantos incidentes há por categoria
-    categorias_qs = Incidente.objects.values('categoria').annotate(total=Count('categoria'))
-    categorias = {item['categoria']: item['total'] for item in categorias_qs}
+    # Exemplo de categorias simuladas
+    categorias = {
+        'TI': 45,
+        'Processos': 32,
+        'Atendimento': 28,
+        'RH': 18,
+    }
 
     return render(request, 'index.html', {
         'incidentes': incidentes,
+        'documentos': documentos,
         'categorias': categorias
     })

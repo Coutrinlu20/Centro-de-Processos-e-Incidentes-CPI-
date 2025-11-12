@@ -2,8 +2,44 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Usuario
 from django.contrib import messages
 from .forms import PermissoesForm
+from .forms import UsuarioForm
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import user_passes_test, login_required
+from django.contrib.auth.hashers import make_password
 
+
+def criar_usuario(request):
+    if request.method == 'POST':
+        nome = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        senha1 = request.POST.get('password1', '')
+        senha2 = request.POST.get('password2', '')
+        perfil = request.POST.get('perfil', '')
+
+        if not nome:
+            messages.error(request, "O campo Nome de Usuário é obrigatório.")
+            return redirect('usuario_create')
+
+        if senha1 != senha2:
+            messages.error(request, "As senhas não coincidem.")
+            return redirect('usuario_create')
+
+        if User.objects.filter(username=nome).exists():
+            messages.error(request, "Já existe um usuário com esse nome.")
+            return redirect('usuario_create')
+
+        usuario = User.objects.create(
+            username=nome,
+            email=email,
+            password=make_password(senha1),
+            is_staff=True if perfil == 'colaborador' else False,
+            is_superuser=True if perfil == 'administrador' else False,
+        )
+
+        messages.success(request, f"Usuário {usuario.username} criado com sucesso!")
+        return redirect('usuarios_listar')
+
+    return render(request, 'usuarios/usuario_form.html')
 
 def _is_admin(user):
     # Use a permissão do Django para gatekeeper (ajuste conforme sua regra)
@@ -30,9 +66,9 @@ def alterar_permissoes(request, usuario_id):
     })
 
 
-def listar_usuarios(request):
-    usuarios = Usuario.objects.all()
-    return render(request, 'usuarios/usuarios_list.html', {'usuarios': usuarios})
+def usuarios_listar(request):
+    usuarios = User.objects.all().order_by('first_name')
+    return render(request, 'usuarios/usuarios_listar.html', {'usuarios': usuarios})
 
 
 def cadastrar_usuario(request):
@@ -77,3 +113,27 @@ def desativar_usuario(request, usuario_id):
     usuario.save()
     messages.success(request, f"Usuário {usuario.username} foi desativado com sucesso.")
     return redirect('listar_usuarios')
+
+
+def adicionar_usuario(request):
+    if request.method == 'POST':
+        nome = request.POST.get('nome_completo')
+        email = request.POST.get('email')
+        perfil = request.POST.get('perfil')
+        senha1 = request.POST.get('password1')
+        senha2 = request.POST.get('password2')
+
+        if senha1 != senha2:
+            messages.error(request, "As senhas não coincidem.")
+        else:
+            user = User.objects.create_user(
+                username=email,
+                email=email,
+                password=senha1,
+                first_name=nome
+            )
+            user.save()
+            messages.success(request, "Usuário criado com sucesso!")
+            return redirect('usuarios_listar')
+
+    return render(request, 'usuarios/usuario_form.html')

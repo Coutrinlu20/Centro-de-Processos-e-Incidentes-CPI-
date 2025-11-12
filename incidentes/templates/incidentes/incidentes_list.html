@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-
 {% block content %}
+
 <div class="container py-4">
 
     <!-- Cabeçalho e botão principal -->
@@ -12,10 +12,6 @@
         <a href="{% url 'incident_create' %}" class="btn btn-primary rounded-3 px-4">
             <i class="bi bi-plus-circle me-1"></i> Novo Incidente
         </a>
-
-        <a href="{% url 'documento_detail' doc.id %}" class="btn btn-outline-primary btn-sm">
-         <i class="bi bi-eye"></i> Visualizar
-       </a>
     </div>
 
     <!-- Barra de busca e filtros -->
@@ -26,107 +22,74 @@
                 <input type="text" class="form-control border-0 bg-light rounded-end" placeholder="Buscar incidentes...">
             </div>
         </div>
-        <div class="col-md-3">
-            <select class="form-select border-0 bg-light">
-                <option selected>Todos os status</option>
-                <option>Aberto</option>
-                <option>Em andamento</option>
-                <option>Resolvido</option>
-                <option>Encerrado</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <select class="form-select border-0 bg-light">
-                <option selected>Todas prioridades</option>
-                <option>Alta</option>
-                <option>Média</option>
-                <option>Baixa</option>
-            </select>
-        </div>
     </div>
 
-    <!-- Cards dos incidentes -->
-    <div class="row g-4">
+    <!-- Lista de incidentes -->
+    <div class="row g-3">
         {% for incidente in incidentes %}
         <div class="col-md-6 col-lg-4">
             <div class="card border-0 shadow-sm rounded-4 h-100">
                 <div class="card-body">
-                    <!-- Título e badges -->
+
+                    <!-- Título e prioridade -->
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h5 class="fw-semibold mb-0 text-truncate" style="max-width: 80%;">{{ incidente.titulo }}</h5>
-                        <div class="text-end">
-                            {% if incidente.prioridade == 'alta' %}
-                                <span class="badge rounded-pill bg-danger">Crítica</span>
-                            {% elif incidente.prioridade == 'media' %}
-                                <span class="badge rounded-pill bg-warning text-dark">Média</span>
-                            {% else %}
-                                <span class="badge rounded-pill bg-success">Baixa</span>
-                            {% endif %}
+                        <h5 class="fw-semibold mb-0">{{ incidente.titulo }}</h5>
+                        {% if incidente.prioridade == "Alta" %}
+                            <span class="badge bg-danger text-white">Alta</span>
+                        {% elif incidente.prioridade == "Média" %}
+                            <span class="badge bg-warning text-dark">Média</span>
+                        {% else %}
+                            <span class="badge bg-success text-white">Baixa</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Descrição -->
+                    <p class="text-muted small mb-3">{{ incidente.descricao|truncatechars:100 }}</p>
+
+                    <!-- Status -->
+                    <div class="mb-3">
+                        {% if incidente.status == "Aberto" %}
+                            <span class="badge bg-secondary">Aberto</span>
+                        {% elif incidente.status == "Em andamento" %}
+                            <span class="badge bg-info text-dark">Em andamento</span>
+                        {% elif incidente.status == "Resolvido" %}
+                            <span class="badge bg-success">Resolvido</span>
+                        {% else %}
+                            <span class="badge bg-dark">Encerrado</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Infos secundárias -->
+                    <div class="d-flex justify-content-between small text-muted mb-3">
+                        <div>
+                            <i class="bi bi-person"></i> {{ incidente.assignee }}
+                            <span class="ms-3"><i class="bi bi-calendar-event"></i> {{ incidente.criado_em|date:"d/m/Y H:i" }}</span>
                         </div>
+                        <span class="badge bg-light text-secondary border">{{ incidente.categoria }}</span>
                     </div>
 
-                    {% if incidente.status == 'andamento' %}
-                        <span class="badge bg-warning text-dark mb-2">Em Andamento</span>
-                    {% elif incidente.status == 'aberto' %}
-                        <span class="badge bg-primary mb-2">Aberto</span>
-                    {% elif incidente.status == 'resolvido' %}
-                        <span class="badge bg-success mb-2">Resolvido</span>
-                    {% else %}
-                        <span class="badge bg-secondary mb-2">Encerrado</span>
-                    {% endif %}
-
-                    <!-- Descrição resumida -->
-                    <p class="text-muted small mb-3">
-                        {{ incidente.descricao|truncatechars:100 }}
-                    </p>
-
-                    <!-- Informações do responsável e data -->
-                    <div class="d-flex align-items-center justify-content-between small text-muted mb-3">
-                        <div><i class="bi bi-person"></i> {{ incidente.assignee|default:"—" }}</div>
-                        <div><i class="bi bi-calendar"></i> {{ incidente.criado_em|date:"d/m/Y H:i" }}</div>
-                    </div>
-
-                    <!-- Botões de ação -->
+                    <!-- Ações -->
                     <div class="d-flex gap-2">
-                        <a href="{% url 'incident_edit' incidente.id %}" class="btn btn-outline-primary btn-sm flex-fill">
+                        <a href="{% url 'incidente_detail' incidente.id %}" class="btn btn-outline-primary btn-sm px-3">
+                            <i class="bi bi-eye"></i> Visualizar
+                        </a>
+                        <a href="{% url 'incidente_edit' incidente.id %}" class="btn btn-outline-secondary btn-sm px-3">
                             <i class="bi bi-pencil"></i> Editar
                         </a>
-                        <a href="{% url 'incident_delete' incidente.id %}"
-                           class="btn btn-outline-danger btn-sm flex-fill"
-                           onclick="return confirm('Deseja realmente excluir este incidente?');">
+                        <a href="{% url 'incidente_delete' incidente.id %}" class="btn btn-outline-danger btn-sm px-3">
                             <i class="bi bi-trash"></i> Excluir
                         </a>
                     </div>
+
                 </div>
             </div>
         </div>
         {% empty %}
-        <div class="text-center text-muted mt-4">
-            <i class="bi bi-inbox fs-1"></i>
-            <p class="mt-2">Nenhum incidente encontrado.</p>
+        <div class="alert alert-light border text-center rounded-4">
+            Nenhum incidente registrado até o momento.
         </div>
         {% endfor %}
     </div>
 </div>
 
-<style>
-    .card {
-        transition: all 0.2s ease-in-out;
-    }
-    .card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    .input-group .form-control {
-        box-shadow: none;
-    }
-    .form-select {
-        box-shadow: none;
-        border-radius: 0.75rem;
-    }
-    .btn-outline-primary:hover,
-    .btn-outline-danger:hover {
-        color: white;
-    }
-</style>
 {% endblock %}

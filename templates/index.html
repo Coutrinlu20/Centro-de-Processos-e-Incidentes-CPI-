@@ -4,8 +4,9 @@
 {% block content %}
 <div class="container py-4">
 
-    <!-- Cabeçalho -->
-    <h4 class="fw-bold mb-4">Dashboard</h4>
+    <!-- Título -->
+    <h2 class="fw-bold mb-4">Dashboard</h2>
+    <h4 class="fw-bold mb-4">Visão geral dos incidentes e manuais do sistema</h4>
 
     <!-- Cards de estatísticas -->
     <div class="row g-3 mb-4">
@@ -54,13 +55,14 @@
         </div>
     </div>
 
-    <!-- Seções principais -->
     <div class="row">
-        <!-- Coluna esquerda: Incidentes recentes -->
+        <!-- Coluna esquerda -->
         <div class="col-lg-8">
+
+            <!-- Incidentes Recentes -->
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="fw-bold mb-0">Incidentes Recentes</h5>
-                <a href="{% url 'incidentes_list' %}" class="btn btn-light btn-sm">Ver todos</a>
+                <a href="{% url 'incident_list' %}" class="btn btn-light btn-sm">Ver todos</a>
             </div>
 
             {% for incidente in incidentes %}
@@ -87,24 +89,74 @@
                         <span class="badge bg-light text-secondary border">{{ incidente.categoria }}</span>
                     </div>
 
+                    <!-- Confirmação de leitura -->
+                    <div class="small text-muted mb-3">
+                        <strong>Leitura:</strong>
+                        {% for user in incidente.usuarios_que_leram.all %}
+                            <span class="text-success"><i class="bi bi-check2"></i> {{ user.first_name|default:user.username }}</span>
+                        {% empty %}
+                            <span class="text-muted">Ninguém ainda.</span>
+                        {% endfor %}
+                    </div>
+
                     <div class="d-flex gap-2">
-                        <a href="{% url 'incident_edit' incidente.id %}" class="btn btn-outline-secondary btn-sm px-3">
-                            <i class="bi bi-pencil"></i> Editar
+                        <a href="{% url 'incidente_detail' incidente.id %}" class="btn btn-outline-primary btn-sm px-3">
+                            <i class="bi bi-eye"></i> Visualizar
                         </a>
-                        <a href="{% url 'incident_delete' incidente.id %}" class="btn btn-outline-danger btn-sm px-3">
-                            <i class="bi bi-trash"></i> Excluir
+                        <a href="{% url 'incidente_edit' incidente.id %}" class="btn btn-outline-secondary btn-sm px-3">
+                            <i class="bi bi-pencil"></i> Editar
                         </a>
                     </div>
                 </div>
             </div>
             {% empty %}
-            <div class="alert alert-light border text-center rounded-4">
-                Nenhum incidente recente encontrado.
+            <div class="alert alert-light border text-center rounded-4">Nenhum incidente recente encontrado.</div>
+            {% endfor %}
+
+            <!-- Manuais Recentes -->
+            <div class="d-flex justify-content-between align-items-center mt-5 mb-3">
+                <h5 class="fw-bold mb-0">Manuais Recentes</h5>
+                <a href="{% url 'documentos_list' %}" class="btn btn-light btn-sm">Ver todos</a>
+            </div>
+
+            {% for doc in documentos %}
+            <div class="card border-0 shadow-sm rounded-4 mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="fw-bold mb-0">{{ doc.titulo }}</h6>
+                        <span class="badge bg-light text-dark border">{{ doc.categoria }}</span>
+                    </div>
+                    <p class="text-muted small mb-3">{{ doc.descricao|truncatechars:100 }}</p>
+
+                    <div class="d-flex justify-content-between small text-muted mb-3">
+                        <span><i class="bi bi-calendar"></i> {{ doc.criado_em|date:"d/m/Y" }}</span>
+                        <span><i class="bi bi-book"></i> v{{ doc.versao }}</span>
+                    </div>
+
+                    <!-- Confirmação de leitura -->
+                    <div class="small text-muted mb-3">
+                        <strong>Leitura:</strong>
+                        {% for user in doc.usuarios_que_leram.all %}
+                            <span class="text-success"><i class="bi bi-check2"></i> {{ user.first_name|default:user.username }}</span>
+                        {% empty %}
+                            <span class="text-muted">Ninguém leu ainda.</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'documento_detail' doc.id %}" class="btn btn-outline-primary btn-sm px-3">
+                            <i class="bi bi-eye"></i> Visualizar
+                        </a>
+                        <a href="{% url 'documento_edit' doc.id %}" class="btn btn-outline-secondary btn-sm px-3">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                    </div>
+                </div>
             </div>
             {% endfor %}
         </div>
 
-        <!-- Coluna direita: Categorias mais recorrentes -->
+        <!-- Coluna direita -->
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm rounded-4 p-3">
                 <h6 class="fw-bold mb-3"><i class="bi bi-graph-up-arrow text-primary"></i> Categorias Mais Recorrentes</h6>
