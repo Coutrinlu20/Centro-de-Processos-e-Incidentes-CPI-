@@ -16,4 +16,7 @@ urlpatterns = [
     # Apps do sistema
     path('usuarios/', include('usuarios.urls')),
     path('incidentes/', include('incidentes.urls')),
+    path('documentos/', include('documentos.urls')),
+    path('', views.index, name='index'),   # ← Página inicial
+
 ]

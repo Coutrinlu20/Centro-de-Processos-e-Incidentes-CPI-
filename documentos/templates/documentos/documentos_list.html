@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load split_tags %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1">Manuais e Documentos</h3>
+            <p class="text-muted mb-0">Acesse e gerencie toda a documentação da empresa</p>
+        </div>
+        <a href="{% url 'documento_create' %}" class="btn btn-primary rounded-3 px-4">
+            <i class="bi bi-plus-circle me-1"></i> Novo Manual
+        </a>
+    </div>
+
+    <!-- Busca e filtro -->
+    <div class="row align-items-center g-3 mb-4">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control border-0 bg-light rounded-end" placeholder="Buscar manuais, políticas, procedimentos...">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select border-0 bg-light">
+                <option selected>Todas categorias</option>
+                <option>TI</option>
+                <option>RH</option>
+                <option>Comercial</option>
+                <option>Atendimento</option>
+                <option>Financeiro</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="row g-4">
+        {% for doc in documentos %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="fw-semibold mb-0">{{ doc.titulo }}</h5>
+                        <span class="badge bg-light text-dark border">{{ doc.categoria }}</span>
+                    </div>
+
+                    <p class="text-muted small mb-3">{{ doc.descricao|truncatechars:100 }}</p>
+
+                    <div class="d-flex flex-wrap gap-1 mb-2">
+                        {% for tag in doc.lista_tags %}
+                            <span class="badge rounded-pill bg-light text-secondary border">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-between small text-muted mb-3">
+                        <span><i class="bi bi-calendar"></i> {{ doc.criado_em|date:"d/m/Y" }}</span>
+                        <span><i class="bi bi-eye"></i> {{ doc.visualizacoes }} visualizações</span>
+                        <span class="badge bg-secondary">{{ doc.versao }}</span>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'documento_detail' doc.id %}" class="btn btn-outline-primary btn-sm flex-fill">
+                            <i class="bi bi-book"></i> Visualizar
+                        </a>
+                        <a href="{% url 'documento_edit' doc.id %}" class="btn btn-outline-secondary btn-sm flex-fill">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{% url 'documento_delete' doc.id %}" class="btn btn-outline-danger btn-sm flex-fill"
+                           onclick="return confirm('Deseja excluir este manual?');">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center text-muted mt-5">
+            <i class="bi bi-journal-x fs-1"></i>
+            <p class="mt-2">Nenhum documento encontrado.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.card:hover { transform: translateY(-3px); transition: 0.2s; }
+.badge.bg-light { background-color: #f8f9fa !important; }
+</style>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Registrar Novo Incidente{% endblock %}
+{% block header %}Registrar Novo Incidente{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="fw-semibold mb-1">Registrar Novo Incidente</h5>
+                            <p class="text-muted small mb-0">
+                                Registre um novo incidente ou solicitação no sistema
+                            </p>
+                        </div>
+                        <a href="{% url 'incidente_list' %}" class="btn-close"></a>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Título -->
+                        <div class="mb-3">
+                            <label for="titulo" class="form-label fw-semibold">Título <span class="text-danger">*</span></label>
+                            <input type="text" name="titulo" id="titulo" class="form-control"
+                                   placeholder="Ex: Sistema fora do ar" required>
+                        </div>
+
+                        <!-- Descrição -->
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label fw-semibold">Descrição <span class="text-danger">*</span></label>
+                            <textarea name="descricao" id="descricao" class="form-control" rows="4"
+                                      placeholder="Descreva o incidente com detalhes..." required></textarea>
+                        </div>
+
+                        <!-- Prioridade e Status -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="prioridade" class="form-label fw-semibold">Prioridade <span class="text-danger">*</span></label>
+                                <select name="prioridade" id="prioridade" class="form-select" required>
+                                    <option value="">Selecione</option>
+                                    <option value="Crítica">Crítica</option>
+                                    <option value="Alta">Alta</option>
+                                    <option value="Média">Média</option>
+                                    <option value="Baixa">Baixa</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="status" class="form-label fw-semibold">Status</label>
+                                <select name="status" id="status" class="form-select">
+                                    <option value="Aberto">Aberto</option>
+                                    <option value="Em Andamento">Em Andamento</option>
+                                    <option value="Resolvido">Resolvido</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Categoria -->
+                        <div class="mb-3">
+                            <label for="categoria" class="form-label fw-semibold">Categoria <span class="text-danger">*</span></label>
+                            <select name="categoria" id="categoria" class="form-select" required>
+                                <option value="">Selecione uma categoria</option>
+                                <option value="TI">TI</option>
+                                <option value="Processos">Processos</option>
+                                <option value="Atendimento">Atendimento</option>
+                                <option value="Financeiro">Financeiro</option>
+                                <option value="RH">RH</option>
+                            </select>
+                        </div>
+
+                        <!-- Responsável -->
+                        <div class="mb-4">
+                            <label for="responsavel" class="form-label fw-semibold">Responsável</label>
+                            <select name="responsavel" id="responsavel" class="form-select">
+                                <option value="">Selecione um responsável</option>
+                                {% for user in usuarios %}
+                                    <option value="{{ user.id }}">{{ user.get_full_name|default:user.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Botões -->
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'incidente_list' %}" class="btn btn-light border">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check2-circle me-1"></i>Criar Incidente
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

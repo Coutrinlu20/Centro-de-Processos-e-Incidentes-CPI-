@@ -1,84 +1,128 @@
-
-{% block title %}Incidentes{% endblock %}
+{% extends 'base.html' %}
 
 {% block content %}
-<div class="card shadow-sm">
-  <div class="card-header bg-white">
-    <h5 class="mb-0">Incidentes</h5>
-  </div>
-  <div class="card-body">
-    {% include 'incidentes/_filtros.html' %}
-  </div>
+<div class="container py-4">
 
-  <div class="table-responsive">
-    <table class="table table-hover align-middle mb-0">
-      <thead class="table-light">
-      <tr>
-        <th>#</th>
-        <th>Título</th>
-        <th>Categoria</th>
-        <th>Prioridade</th>
-        <th>Status</th>
-        <th>Responsável</th>
-        <th>Criado</th>
-        <th class="text-center" style="width:160px;">Ações</th>
-      </tr>
-      </thead>
-      <tbody>
-      {% for incidente in page_obj.object_list %}
-        <tr>
-          <td>{{ incidente.id }}</td>
-          <td><a href="{% url 'incident_detail' incidente.id %}" class="link-primary text-decoration-none">{{ incidente.title }}</a></td>
-          <td>{{ incidente.get_category_display|default:incidente.category }}</td>
-          <td><span class="badge text-bg-{% if incidente.priority == 'ALTA' %}danger{% elif incidente.priority == 'MEDIA' %}warning{% else %}secondary{% endif %}">
-            {{ incidente.get_priority_display|default:incidente.priority }}
-          </span></td>
-          <td>
-            <span class="badge text-bg-{% if incidente.status == 'ABERTO' %}primary{% elif incidente.status == 'EM_ANDAMENTO' %}warning{% elif incidente.status == 'RESOLVIDO' %}success{% else %}secondary{% endif %}">
-              {{ incidente.get_status_display|default:incidente.status }}
-            </span>
-          </td>
-          <td>{{ incidente.assignee }}</td>
-          <td>{{ incidente.created_at|date:"d/m/Y H:i" }}</td>
-          <td class="text-center">
-            <a href="{% url 'incident_update' incidente.id %}" class="btn btn-sm btn-outline-secondary">Editar</a>
-            <a href="{% url 'incident_delete' incidente.id %}" class="btn btn-sm btn-outline-danger">Excluir</a>
-          </td>
-        </tr>
-      {% empty %}
-        <tr><td colspan="8" class="text-center text-muted py-4">Nenhum incidente encontrado.</td></tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  </div>
+    <!-- Cabeçalho e botão principal -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1">Incidentes</h3>
+            <p class="text-muted mb-0">Gerencie e acompanhe todos os incidentes registrados ({{ incidentes|length }})</p>
+        </div>
+        <a href="{% url 'incident_create' %}" class="btn btn-primary rounded-3 px-4">
+            <i class="bi bi-plus-circle me-1"></i> Novo Incidente
+        </a>
+    </div>
 
-  <div class="card-footer d-flex justify-content-between align-items-center">
-    <div class="small text-muted">
-      Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }} — Total: {{ page_obj.paginator.count }}
+    <!-- Barra de busca e filtros -->
+    <div class="row align-items-center g-3 mb-4">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control border-0 bg-light rounded-end" placeholder="Buscar incidentes...">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select border-0 bg-light">
+                <option selected>Todos os status</option>
+                <option>Aberto</option>
+                <option>Em andamento</option>
+                <option>Resolvido</option>
+                <option>Encerrado</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select border-0 bg-light">
+                <option selected>Todas prioridades</option>
+                <option>Alta</option>
+                <option>Média</option>
+                <option>Baixa</option>
+            </select>
+        </div>
     </div>
-    <div class="d-flex gap-2">
-      <a class="btn btn-outline-success btn-sm"
-         href="{% url 'incident_export' %}?{{ request.GET.urlencode }}">Exportar</a>
-      <nav aria-label="Paginação">
-        <ul class="pagination pagination-sm mb-0">
-          {% if page_obj.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page=1&{{ request.GET.urlencode }}">«</a></li>
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}">‹</a></li>
-          {% else %}
-            <li class="page-item disabled"><span class="page-link">«</span></li>
-            <li class="page-item disabled"><span class="page-link">‹</span></li>
-          {% endif %}
-          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
-          {% if page_obj.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}">›</a></li>
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&{{ request.GET.urlencode }}">»</a></li>
-          {% else %}
-            <li class="page-item disabled"><span class="page-link">›</span></li>
-            <li class="page-item disabled"><span class="page-link">»</span></li>
-          {% endif %}
-        </ul>
-      </nav>
+
+    <!-- Cards dos incidentes -->
+    <div class="row g-4">
+        {% for incidente in incidentes %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body">
+                    <!-- Título e badges -->
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="fw-semibold mb-0 text-truncate" style="max-width: 80%;">{{ incidente.titulo }}</h5>
+                        <div class="text-end">
+                            {% if incidente.prioridade == 'alta' %}
+                                <span class="badge rounded-pill bg-danger">Crítica</span>
+                            {% elif incidente.prioridade == 'media' %}
+                                <span class="badge rounded-pill bg-warning text-dark">Média</span>
+                            {% else %}
+                                <span class="badge rounded-pill bg-success">Baixa</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if incidente.status == 'andamento' %}
+                        <span class="badge bg-warning text-dark mb-2">Em Andamento</span>
+                    {% elif incidente.status == 'aberto' %}
+                        <span class="badge bg-primary mb-2">Aberto</span>
+                    {% elif incidente.status == 'resolvido' %}
+                        <span class="badge bg-success mb-2">Resolvido</span>
+                    {% else %}
+                        <span class="badge bg-secondary mb-2">Encerrado</span>
+                    {% endif %}
+
+                    <!-- Descrição resumida -->
+                    <p class="text-muted small mb-3">
+                        {{ incidente.descricao|truncatechars:100 }}
+                    </p>
+
+                    <!-- Informações do responsável e data -->
+                    <div class="d-flex align-items-center justify-content-between small text-muted mb-3">
+                        <div><i class="bi bi-person"></i> {{ incidente.assignee|default:"—" }}</div>
+                        <div><i class="bi bi-calendar"></i> {{ incidente.criado_em|date:"d/m/Y H:i" }}</div>
+                    </div>
+
+                    <!-- Botões de ação -->
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'incident_edit' incidente.id %}" class="btn btn-outline-primary btn-sm flex-fill">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        <a href="{% url 'incident_delete' incidente.id %}"
+                           class="btn btn-outline-danger btn-sm flex-fill"
+                           onclick="return confirm('Deseja realmente excluir este incidente?');">
+                            <i class="bi bi-trash"></i> Excluir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center text-muted mt-4">
+            <i class="bi bi-inbox fs-1"></i>
+            <p class="mt-2">Nenhum incidente encontrado.</p>
+        </div>
+        {% endfor %}
     </div>
-  </div>
 </div>
+
+<style>
+    .card {
+        transition: all 0.2s ease-in-out;
+    }
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .input-group .form-control {
+        box-shadow: none;
+    }
+    .form-select {
+        box-shadow: none;
+        border-radius: 0.75rem;
+    }
+    .btn-outline-primary:hover,
+    .btn-outline-danger:hover {
+        color: white;
+    }
+</style>
 {% endblock %}

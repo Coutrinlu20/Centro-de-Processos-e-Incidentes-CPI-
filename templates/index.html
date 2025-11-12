@@ -1,62 +1,132 @@
 {% extends 'base.html' %}
-{% block title %}Dashboard{% endblock %}
+{% load static %}
+
 {% block content %}
+<div class="container py-4">
 
-<h3 class="fw-bold mb-3">Dashboard</h3>
-<p class="text-muted mb-4">Visão geral dos incidentes e manuais do sistema</p>
+    <!-- Cabeçalho -->
+    <h4 class="fw-bold mb-4">Dashboard</h4>
 
-<div class="row g-3">
-    <div class="col-md-3">
-        <div class="card border-0 shadow-sm p-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h6 class="text-muted mb-0">Incidentes Abertos</h6>
-                    <h3 class="fw-bold">24</h3>
+    <!-- Cards de estatísticas -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-semibold text-muted">Incidentes Abertos</span>
+                    <i class="bi bi-exclamation-circle text-warning fs-5"></i>
                 </div>
-                <i class="bi bi-exclamation-triangle text-warning fs-2"></i>
+                <h4 class="fw-bold mb-1 text-dark">24</h4>
+                <small class="text-danger">+3 esta semana</small>
             </div>
-            <small class="text-danger">+3 esta semana</small>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-semibold text-muted">Resolvidos Hoje</span>
+                    <i class="bi bi-check-circle text-success fs-5"></i>
+                </div>
+                <h4 class="fw-bold mb-1 text-dark">12</h4>
+                <small class="text-success">+25% vs ontem</small>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-semibold text-muted">Tempo Médio Resolução</span>
+                    <i class="bi bi-clock-history text-primary fs-5"></i>
+                </div>
+                <h4 class="fw-bold mb-1 text-dark">4.2h</h4>
+                <small class="text-muted">-0.8h vs semana passada</small>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-semibold text-muted">Manuais Publicados</span>
+                    <i class="bi bi-book text-primary fs-5"></i>
+                </div>
+                <h4 class="fw-bold mb-1 text-dark">156</h4>
+                <small class="text-success">+8 este mês</small>
+            </div>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card border-0 shadow-sm p-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h6 class="text-muted mb-0">Resolvidos Hoje</h6>
-                    <h3 class="fw-bold">12</h3>
-                </div>
-                <i class="bi bi-check-circle text-success fs-2"></i>
+    <!-- Seções principais -->
+    <div class="row">
+        <!-- Coluna esquerda: Incidentes recentes -->
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Incidentes Recentes</h5>
+                <a href="{% url 'incidentes_list' %}" class="btn btn-light btn-sm">Ver todos</a>
             </div>
-            <small class="text-success">+25% vs ontem</small>
-        </div>
-    </div>
 
-    <div class="col-md-3">
-        <div class="card border-0 shadow-sm p-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h6 class="text-muted mb-0">Tempo Médio</h6>
-                    <h3 class="fw-bold">4.2h</h3>
-                </div>
-                <i class="bi bi-clock text-primary fs-2"></i>
-            </div>
-            <small class="text-muted">-0.8h vs semana passada</small>
-        </div>
-    </div>
+            {% for incidente in incidentes %}
+            <div class="card border-0 shadow-sm rounded-4 mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="fw-bold mb-0">{{ incidente.titulo }}</h6>
+                        <span class="badge rounded-pill 
+                            {% if incidente.prioridade == 'Crítica' %}bg-danger
+                            {% elif incidente.prioridade == 'Alta' %}bg-warning
+                            {% elif incidente.prioridade == 'Média' %}bg-info
+                            {% else %}bg-secondary{% endif %}">
+                            {{ incidente.prioridade }}
+                        </span>
+                    </div>
 
-    <div class="col-md-3">
-        <div class="card border-0 shadow-sm p-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h6 class="text-muted mb-0">Manuais Publicados</h6>
-                    <h3 class="fw-bold">156</h3>
+                    <p class="text-muted small mb-3">{{ incidente.descricao|truncatechars:120 }}</p>
+
+                    <div class="d-flex justify-content-between small text-muted mb-3">
+                        <div>
+                            <i class="bi bi-person"></i> {{ incidente.assignee }}
+                            <span class="ms-3"><i class="bi bi-calendar-event"></i> {{ incidente.criado_em|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        <span class="badge bg-light text-secondary border">{{ incidente.categoria }}</span>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'incident_edit' incidente.id %}" class="btn btn-outline-secondary btn-sm px-3">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        <a href="{% url 'incident_delete' incidente.id %}" class="btn btn-outline-danger btn-sm px-3">
+                            <i class="bi bi-trash"></i> Excluir
+                        </a>
+                    </div>
                 </div>
-                <i class="bi bi-journal-text text-info fs-2"></i>
             </div>
-            <small class="text-info">+8 este mês</small>
+            {% empty %}
+            <div class="alert alert-light border text-center rounded-4">
+                Nenhum incidente recente encontrado.
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Coluna direita: Categorias mais recorrentes -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3">
+                <h6 class="fw-bold mb-3"><i class="bi bi-graph-up-arrow text-primary"></i> Categorias Mais Recorrentes</h6>
+
+                {% for nome, total in categorias.items %}
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="fw-semibold">{{ nome }}</span>
+                    <small class="text-muted">{{ total }} incidentes</small>
+                </div>
+                <div class="progress mb-3" style="height: 6px;">
+                    <div class="progress-bar 
+                        {% if nome == 'TI' %}bg-primary
+                        {% elif nome == 'Processos' %}bg-warning
+                        {% elif nome == 'Atendimento' %}bg-success
+                        {% elif nome == 'RH' %}bg-danger
+                        {% else %}bg-secondary{% endif %}"
+                        role="progressbar" style="width: {{ total }}%;" aria-valuenow="{{ total }}" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>
-
 {% endblock %}
