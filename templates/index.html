@@ -2,160 +2,133 @@
 {% load static %}
 
 {% block content %}
-<div class="container py-4">
+    <div class="container py-4">
 
-    <!-- Título -->
-    <h2 class="fw-bold mb-4">Dashboard</h2>
-    <h4 class="fw-bold mb-4">Visão geral dos incidentes e manuais do sistema</h4>
+        <!-- Título -->
+        <h2 class="fw-bold mb-4">Dashboard</h2>
+        <h4 class="fw-bold mb-4">Visão geral dos incidentes e manuais do sistema</h4>
 
-    <!-- Cards de estatísticas -->
-    <div class="row g-3 mb-4">
+        <!-- Cards de estatísticas -->
+        <div class="row g-4 mb-4">
+
+        <!-- Incidentes Abertos -->
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-4 p-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="fw-semibold text-muted">Incidentes Abertos</span>
-                    <i class="bi bi-exclamation-circle text-warning fs-5"></i>
+            <div class="shadow-sm bg-white p-4 rounded-4 border">
+                <div class="d-flex justify-content-between">
+                    <h6 class="text-muted">Incidentes Abertos</h6>
+                    <i class="bi bi-exclamation-circle text-warning"></i>
                 </div>
-                <h4 class="fw-bold mb-1 text-dark">24</h4>
-                <small class="text-danger">+3 esta semana</small>
+                <h3 class="fw-bold">{{ incidentes_abertos }}</h3>
+                <p class="text-danger small">+3 esta semana</p>
             </div>
         </div>
 
+        <!-- Resolvidos Hoje -->
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-4 p-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="fw-semibold text-muted">Resolvidos Hoje</span>
-                    <i class="bi bi-check-circle text-success fs-5"></i>
+            <div class="shadow-sm bg-white p-4 rounded-4 border">
+                <div class="d-flex justify-content-between">
+                    <h6 class="text-muted">Resolvidos Hoje</h6>
+                    <i class="bi bi-check-circle text-success"></i>
                 </div>
-                <h4 class="fw-bold mb-1 text-dark">12</h4>
-                <small class="text-success">+25% vs ontem</small>
+                <h3 class="fw-bold">{{ resolvidos_hoje }}</h3>
+                <p class="text-success small">+25% vs ontem</p>
             </div>
         </div>
 
+        <!-- Tempo Médio Resolução -->
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-4 p-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="fw-semibold text-muted">Tempo Médio Resolução</span>
-                    <i class="bi bi-clock-history text-primary fs-5"></i>
+            <div class="shadow-sm bg-white p-4 rounded-4 border">
+                <div class="d-flex justify-content-between">
+                    <h6 class="text-muted">Tempo Médio Resolução</h6>
+                    <i class="bi bi-clock-history text-primary"></i>
                 </div>
-                <h4 class="fw-bold mb-1 text-dark">4.2h</h4>
-                <small class="text-muted">-0.8h vs semana passada</small>
+                <h3 class="fw-bold">
+                    {% if tempo_medio %}
+                        {{ tempo_medio }}h
+                    {% else %}
+                        —
+                    {% endif %}
+                </h3>
+                <p class="text-primary small">-0.8h vs semana passada</p>
             </div>
         </div>
 
+        <!-- Manuais Publicados -->
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-4 p-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="fw-semibold text-muted">Manuais Publicados</span>
-                    <i class="bi bi-book text-primary fs-5"></i>
+            <div class="shadow-sm bg-white p-4 rounded-4 border">
+                <div class="d-flex justify-content-between">
+                    <h6 class="text-muted">Manuais Publicados</h6>
+                    <i class="bi bi-journal-bookmark text-info"></i>
                 </div>
-                <h4 class="fw-bold mb-1 text-dark">156</h4>
-                <small class="text-success">+8 este mês</small>
+                <h3 class="fw-bold">{{ manuais_publicados }}</h3>
+                <p class="text-success small">+8 este mês</p>
             </div>
         </div>
+
     </div>
-
     <div class="row">
         <!-- Coluna esquerda -->
         <div class="col-lg-8">
 
-            <!-- Incidentes Recentes -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold mb-0">Incidentes Recentes</h5>
-                <a href="{% url 'incidentes_listar' %}" class="btn btn-light btn-sm">Ver todos</a>
+            <h4 class="fw-bold mt-4">Incidentes Recentes</h4>
+            <div class="d-flex justify-content-end mb-2">
+                <a href="{% url 'incidentes_listar' %}" class="btn btn-outline-primary btn-sm">Ver todos</a>
             </div>
 
-            {% for incidente in incidentes %}
-            <div class="card border-0 shadow-sm rounded-4 mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h6 class="fw-bold mb-0">{{ incidente.titulo }}</h6>
-                        <span class="badge rounded-pill 
-                            {% if incidente.prioridade == 'Crítica' %}bg-danger
-                            {% elif incidente.prioridade == 'Alta' %}bg-warning
-                            {% elif incidente.prioridade == 'Média' %}bg-info
-                            {% else %}bg-secondary{% endif %}">
-                            {{ incidente.prioridade }}
-                        </span>
-                    </div>
+            {% if incidentes_recentes %}
+                {% for incidente in incidentes_recentes %}
+                    <div class="card border-0 shadow-sm rounded-4 mb-3">
+                        <div class="card-body">
+                            <h5 class="fw-semibold">{{ incidente.titulo }}</h5>
+                            <p class="text-muted">{{ incidente.descricao|truncatechars:150 }}</p>
 
-                    <p class="text-muted small mb-3">{{ incidente.descricao|truncatechars:120 }}</p>
+                            <div class="d-flex justify-content-between text-muted small mb-3">
+                                <span><i class="bi bi-person"></i> {{ incidente.assignee }}</span>
+                                <span><i class="bi bi-calendar"></i> {{ incidente.criado_em|date:"d/m/Y H:i" }}</span>
+                            </div>
 
-                    <div class="d-flex justify-content-between small text-muted mb-3">
-                        <div>
-                            <i class="bi bi-person"></i> {{ incidente.assignee }}
-                            <span class="ms-3"><i class="bi bi-calendar-event"></i> {{ incidente.criado_em|date:"d/m/Y H:i" }}</span>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'incidente_detail' incidente.id %}" class="btn btn-outline-primary btn-sm">Ver</a>
+                                <a href="{% url 'incidente_edit' incidente.id %}" class="btn btn-outline-secondary btn-sm">Editar</a>
+                            </div>
                         </div>
-                        <span class="badge bg-light text-secondary border">{{ incidente.categoria }}</span>
                     </div>
-
-                    <!-- Confirmação de leitura -->
-                    <div class="small text-muted mb-3">
-                        <strong>Leitura:</strong>
-                        {% for user in incidente.usuarios_que_leram.all %}
-                            <span class="text-success"><i class="bi bi-check2"></i> {{ user.first_name|default:user.username }}</span>
-                        {% empty %}
-                            <span class="text-muted">Ninguém ainda.</span>
-                        {% endfor %}
-                    </div>
-
-                    <div class="d-flex gap-2">
-                        <a href="{% url 'incidente_detail' incidente.id %}" class="btn btn-outline-primary btn-sm px-3">
-                            <i class="bi bi-eye"></i> Visualizar
-                        </a>
-                        <a href="{% url 'incidente_edit' incidente.id %}" class="btn btn-outline-secondary btn-sm px-3">
-                            <i class="bi bi-pencil"></i> Editar
-                        </a>
-                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-light border text-center rounded-4">
+                    Nenhum incidente recente encontrado.
                 </div>
-            </div>
-            {% empty %}
-            <div class="alert alert-light border text-center rounded-4">Nenhum incidente recente encontrado.</div>
-            {% endfor %}
+            {% endif %}
 
             <!-- Manuais Recentes -->
-            <div class="d-flex justify-content-between align-items-center mt-5 mb-3">
-                <h5 class="fw-bold mb-0">Manuais Recentes</h5>
-                <a href="{% url 'documentos_list' %}" class="btn btn-light btn-sm">Ver todos</a>
+            <h4 class="fw-bold mt-5">Manuais Recentes</h4>
+            <div class="d-flex justify-content-end mb-2">
+                <a href="{% url 'documentos_list' %}" class="btn btn-outline-primary btn-sm">Ver todos</a>
             </div>
 
-            {% for doc in documentos %}
-            <div class="card border-0 shadow-sm rounded-4 mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h6 class="fw-bold mb-0">{{ doc.titulo }}</h6>
-                        <span class="badge bg-light text-dark border">{{ doc.categoria }}</span>
-                    </div>
-                    <p class="text-muted small mb-3">{{ doc.descricao|truncatechars:100 }}</p>
+            {% if documentos_recentes %}
+                {% for manual in documentos_recentes %}
+                    <div class="card border-0 shadow-sm rounded-4 mb-3">
+                        <div class="card-body">
+                            <h5 class="fw-semibold">{{ manual.titulo }}</h5>
+                            <p class="text-muted">{{ manual.descricao|truncatechars:150 }}</p>
 
-                    <div class="d-flex justify-content-between small text-muted mb-3">
-                        <span><i class="bi bi-calendar"></i> {{ doc.criado_em|date:"d/m/Y" }}</span>
-                        <span><i class="bi bi-book"></i> v{{ doc.versao }}</span>
-                    </div>
+                            <div class="d-flex justify-content-between text-muted small mb-3">
+                                <span><i class="bi bi-calendar"></i> {{ manual.criado_em|date:"d/m/Y H:i" }}</span>
+                                <span class="badge bg-light text-dark">{{ manual.categoria }}</span>
+                            </div>
 
-                    <!-- Confirmação de leitura -->
-                    <div class="small text-muted mb-3">
-                        <strong>Leitura:</strong>
-                        {% for user in doc.usuarios_que_leram.all %}
-                            <span class="text-success"><i class="bi bi-check2"></i> {{ user.first_name|default:user.username }}</span>
-                        {% empty %}
-                            <span class="text-muted">Ninguém leu ainda.</span>
-                        {% endfor %}
+                            <a href="{% url 'documento_detail' manual.id %}" class="btn btn-outline-primary btn-sm">Ver</a>
+                        </div>
                     </div>
-
-                    <div class="d-flex gap-2">
-                        <a href="{% url 'documento_detail' doc.id %}" class="btn btn-outline-primary btn-sm px-3">
-                            <i class="bi bi-eye"></i> Visualizar
-                        </a>
-                        <a href="{% url 'documento_edit' doc.id %}" class="btn btn-outline-secondary btn-sm px-3">
-                            <i class="bi bi-pencil"></i> Editar
-                        </a>
-                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-light border text-center rounded-4">
+                    Nenhum manual recente encontrado.
                 </div>
-            </div>
-            {% endfor %}
-        </div>
+            {% endif %}
 
+        </div>
         <!-- Coluna direita -->
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm rounded-4 p-3">

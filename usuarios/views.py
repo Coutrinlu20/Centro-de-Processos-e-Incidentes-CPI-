@@ -3,7 +3,7 @@ from .models import Usuario
 from django.contrib import messages
 from .forms import PermissoesForm
 from .forms import UsuarioForm
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
 from django.contrib.auth.decorators import user_passes_test, login_required
 from django.contrib.auth.hashers import make_password
 
@@ -137,3 +137,41 @@ def adicionar_usuario(request):
             return redirect('usuarios_listar')
 
     return render(request, 'usuarios/usuario_form.html')
+
+
+def gerenciar_permissoes(request, id):
+    usuario = get_object_or_404(User, id=id)
+
+    permissoes = {
+        "Incidentes": [
+            ("ver_incidentes", "Ver Incidentes"),
+            ("editar_incidentes", "Criar/Editar Incidentes"),
+        ],
+        "Manuais & Documentos": [
+            ("ver_documentos", "Ver Manuais"),
+            ("editar_documentos", "Criar/Editar Manuais"),
+        ],
+        "Administração": [
+            ("gerenciar_usuarios", "Gerenciar Usuários"),
+            ("ver_relatorios", "Ver Relatórios/Dashboards"),
+        ],
+    }
+
+    user_perms = usuario.get_all_permissions()
+
+    if request.method == "POST":
+
+        # adiciona apenas as selecionadas
+        selecionadas = request.POST.getlist("permissoes")
+
+        for codename in selecionadas:
+            perm = Permission.objects.get(codename=codename)
+            usuario.user_permissions.add(perm)
+
+        return redirect('usuarios_listar')
+
+    return render(request, "usuarios/usuario_permissoes.html", {
+        "usuario": usuario,
+        "permissoes": permissoes,
+        "user_perms": user_perms
+    })

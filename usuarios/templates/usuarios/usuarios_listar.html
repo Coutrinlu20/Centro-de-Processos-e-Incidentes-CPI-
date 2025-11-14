@@ -133,7 +133,7 @@
         <!-- Modal de Alterar Permissões -->
         <div class="modal fade" id="permissoesModal{{ usuario.id }}" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
-                <form method="post" action="{% url 'alterar_permissoes' usuario.id %}" class="modal-content border-0 shadow-sm">
+                <form method="post" action="{% url 'usuarios_permissoes' usuario.id %}" class="modal-content border-0 shadow-sm">
                     {% csrf_token %}
                     <div class="modal-header">
                         <h5 class="modal-title"><i class="bi bi-shield-lock me-2"></i>Permissões · {{ usuario.name }}</h5>
